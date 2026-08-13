@@ -1,0 +1,11 @@
+# Data (large geospatial files - Don't commit, reproduced via pipeline, not stored.
+data/
+
+#Python
+__pycache__/
+.pyc
+.venv/
+.ipynb_checkpoints/
+
+#Environment credentials
+.env
