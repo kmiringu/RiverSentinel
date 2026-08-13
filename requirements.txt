@@ -1,0 +1,19 @@
+# geospatial
+earthengine-api
+geemap
+geopandas
+rasterio
+shapely
+folium
+
+# modeling
+scikit-learn
+numpy
+pandas
+
+# app
+streamlit
+
+# notebooks
+jupyter
+matplotlib
