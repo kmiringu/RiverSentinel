@@ -128,6 +128,3 @@ purpose — see below).
 
 ---
 
-*Note on process: git commits in this project are always run by the user, never by Claude, even
-when Claude is writing and executing the surrounding code — a deliberate choice so there's still
-something hands-on in every session.*
