@@ -9,3 +9,6 @@ __pycache__/
 
 #Environment credentials
 .env
+
+#CLAUDE
+CLAUDE.md
