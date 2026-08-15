@@ -128,3 +128,55 @@ purpose — see below).
 
 ---
 
+## 2026-08-15 — Notebook 03: Random Forest classification
+
+**Objective:** resolve the open question from notebook 02 — does a trained classifier beat the
+83.6% tuned threshold baseline, or does the simple approach hold up?
+
+**Method:** `ee.Classifier.smileRandomForest` (100 trees, untuned, Earth Engine server-side —
+consistent with the rest of the pipeline, no local array export needed). Features: the six raw
+Sentinel-2 bands (B2, B3, B4, B8, B11, B12) plus NDVI and NDBI as engineered features, carrying
+forward the domain knowledge from notebook 02 rather than discarding it. Labels: ESA WorldCover
+built-up class, same reference as before — but now used as training data, not just a validation
+check.
+
+**Methodological guard:** training a classifier directly on WorldCover-derived labels and then
+scoring it against WorldCover is close to circular if evaluated on the same pixels. To keep the
+comparison against the baseline fair, labeled points were stratified-sampled (1500 points,
+balanced across built-up/non-built-up) and split 70/30 into train/test *before* training. The RF
+is only scored on the held-out 30% it never saw.
+
+**Result:**
+
+| Method | Metric | Value |
+|---|---|---|
+| Threshold baseline | full-image agreement vs. WorldCover | 83.6% |
+| Random Forest | held-out point accuracy | **86.2%** |
+| Random Forest | full-image agreement vs. WorldCover | 86.8% |
+
+Confusion matrix on held-out points (rows=actual, cols=predicted, [not-built-up, built-up]):
+`[[375, 74], [49, 392]]` — reasonably balanced error, unlike the threshold sweep's asymmetric
+over/under-classification.
+
+**Feature importance:** B11 (SWIR1) and B12 (SWIR2) ranked highest, NDBI close behind — the model
+converged on the same physical signal NDBI was built from, rather than finding something
+unrelated. The gain over the baseline looks like better calibration around the hard threshold
+cutoffs, not a different underlying signal.
+
+**Caveat:** RF built-up fraction is 38.0% vs. WorldCover's 31.9% — still over-classifying, less
+than raw NDBI (56.4%) but more than the tuned threshold baseline (26.6%). Better pixel-level
+accuracy, worse aggregate area calibration than the threshold approach — same
+accuracy-vs-area-total distinction flagged in notebook 02.
+
+**Decision: adopt the Random Forest classifier** (86.2% held-out accuracy) as the built-up layer
+going forward, superseding the threshold baseline. It wins on the metric that matters (held-out
+accuracy) with more balanced errors, at the cost of a small amount of aggregate-area calibration.
+
+**Also fixed:** `ee.Classifier.smileRandomForest` takes `numberOfTrees=`, not `numTrees=` — the
+Python API param name in the currently installed `earthengine-api` differs from what appears in
+some older EE documentation/examples.
+
+**Status:** written and executed, not yet committed to git.
+
+---
+
