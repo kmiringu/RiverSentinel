@@ -180,3 +180,76 @@ some older EE documentation/examples.
 
 ---
 
+## 2026-08-16/17 — Notebook 04: Change detection, and a real radiometric bug
+
+**Objective:** apply the RF classifier to an earlier composite (2019 dry season, 8 scenes — 2017's
+equivalent window only has 3, too sparse to trust) and measure built-up growth 2019→2024, the
+first half of the project's stated goal.
+
+**Approach:** train once on 2024 (the only year WorldCover labels are contemporaneous with),
+apply the same fixed classifier to both composites — the methodologically correct choice for
+change detection (a moving decision boundary would make "change" ambiguous between real change
+and classifier drift).
+
+**First result failed its own sanity check.** Built into the notebook from the start: "lost
+built-up" (built-up in 2019, not in 2024) should be near-zero in a growing city — a large value
+would mean the classifier is unstable across years, not that Nairobi de-urbanized. First run:
+**32.1% lost built-up.** Far too large to be noise.
+
+**Diagnosis, in two layers:**
+
+1. Per-band means differed hugely across the whole city between composites (e.g. B4: 1770 in
+   2019 vs. 952 in 2024) — a systematic brightness shift, not a land-cover signal. Not the known
+   Sentinel-2 baseline-offset bug (already handled by `_HARMONIZED`) — wrong direction/magnitude
+   for that. Applying linear (mean/stdDev) band normalization, 2019→2024, brought "lost built-up"
+   down to ~16% — real progress, not a fix.
+2. Checking band statistics *inside Nairobi National Park* (large, protected, presumed
+   near-unchanged) explained the rest: 2019's park-interior stdDev was **5–10x higher** than
+   2024's in visible bands (B2: 1063 vs. 99) — far too much internal variance for a spectrally
+   uniform natural area. Root cause: `acquisition.py` only ever filtered by whole-scene
+   `CLOUDY_PIXEL_PERCENTAGE`, no per-pixel cloud/shadow mask. Fine with 11 clean scenes going into
+   a 2024 median; not fine with only 8 scenes in 2019, where a median has fewer alternatives to
+   outvote a contaminated pixel.
+
+**Fix applied at the source, not papered over:** `acquisition.py`'s `get_sentinel2_composite` now
+masks cloud/shadow/cirrus per-pixel via the Sentinel-2 SCL band before compositing — a real
+correctness fix to the shared, reused module. Notebook 03 was re-run against it as a regression
+check: 86.2%→85.9% held-out accuracy, negligible drift, confirming the bug mattered for the
+sparse year and was invisible in the well-covered one.
+
+**Masking alone still wasn't enough** (~21% lost built-up remained) — combining masking with the
+mean/stdDev band normalization got it down to **11.0%**, the best result found. Graduated into
+`src/classification.py` as `normalize_to_reference()` since it's now used twice (this notebook,
+future cross-date work).
+
+**Final numbers (masked + normalized):**
+
+| Metric | Value |
+|---|---|
+| Built-up fraction, 2019 (normalized) | 40.2% |
+| Built-up fraction, 2024 | 37.2% |
+| Net change | -3.0 percentage points |
+| New built-up | 8.2% of Nairobi |
+| Lost built-up (noise check) | 11.0% of Nairobi |
+
+**Honest conclusion — this is a methodological finding, not a growth measurement.** Visually, the
+new-built-up layer is diffuse salt-and-pepper noise spread evenly across the city, not
+concentrated growth at the urban fringe (what real 5-year growth should look like spatially). The
+-3.0pp net "shrinkage" is implausible for a growing city and sits inside the residual noise band.
+**Decision: do not report the pixel-level change map or the net percentage as a real finding.**
+Naive independent per-date classification with an absolute-reflectance RF is not yet reliable
+enough for pixel-level change detection here, even after masking and normalization.
+
+**Also tried and explicitly rejected:** pseudo-invariant-feature (PIF) normalization using
+Nairobi National Park's interior as the sole calibration region — overcorrected badly (2019
+built-up fraction collapsed to an implausible 5.3%) because the park's own statistics were still
+cloud-contaminated in the pre-masking test. Not re-tested post-fix; noted as the most promising
+next step (a more careful multi-region PIF set, or proper atmospheric correction) if pixel-level
+change detection is needed later.
+
+**Status:** notebook 04 written and executed with an honest negative/mixed result; notebook 03
+re-executed and re-committed with updated numbers reflecting the acquisition.py fix; not yet
+committed to git.
+
+---
+

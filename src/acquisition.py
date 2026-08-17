@@ -13,12 +13,26 @@ def get_nairobi_boundary():
     return nairobi_fc.geometry()
 
 
+def _mask_s2_clouds(image):
+    """Per-pixel cloud/shadow mask via the SCL band (3=shadow, 8/9=cloud, 10=cirrus).
+
+    The scene-level CLOUDY_PIXEL_PERCENTAGE filter alone lets contaminated pixels through
+    within an otherwise-accepted scene; those survive a median composite when few scenes
+    contribute (notebook 04 found this corrupting a low-scene-count year, not the well-covered
+    2024 composite where it went unnoticed).
+    """
+    scl = image.select('SCL')
+    mask = scl.neq(3).And(scl.neq(8)).And(scl.neq(9)).And(scl.neq(10))
+    return image.updateMask(mask)
+
+
 def get_sentinel2_composite(boundary, start_date, end_date, cloud_threshold=20):
     s2_filtered = (
         ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
         .filterBounds(boundary)
         .filterDate(start_date, end_date)
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', cloud_threshold))
+        .map(_mask_s2_clouds)
     )
     scene_count = s2_filtered.size().getInfo()
     composite = s2_filtered.median().clip(boundary)
