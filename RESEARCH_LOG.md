@@ -253,3 +253,58 @@ committed to git.
 
 ---
 
+## 2026-08-18 — Notebook 05: Riparian buffer encroachment analysis
+
+**Objective:** the second half of the project's stated goal — quantify built-up encroachment
+into riparian zones. Deliberately built on the 2024 single-year RF classification (notebook 03),
+not the 2019→2024 change map — notebook 04 already established that comparison isn't reliable
+enough yet, so this asks a different, still-answerable question: where does built-up land
+currently sit relative to rivers, not when it arrived.
+
+**River geometry:** `WWF/HydroSHEDS/v1/FreeFlowingRivers`, filtered to Nairobi — 42 reaches, 393
+km total. Validated before trusting it: nearest reach to the CBD is 688m away with 0.22 m³/s
+discharge, consistent with a real small urban stream (Nairobi River), not just larger regional
+rivers skirting the city's edge. Buffer widths (30/50/100m) swept rather than fixed to one
+number, same spirit as notebook 02's threshold sweep — explicitly *not* a claim about Kenya's
+legal riparian reserve width, which is tiered by river size under the Water Act / NEMA
+guidelines.
+
+**First result was surprising and needed a second pass to trust.** City-wide, excluding Nairobi
+National Park (river reaches running through it would mechanically drag down any riparian
+statistic — protected land, no legal development, regardless of real encroachment elsewhere),
+riparian buffer zones came back at **~41.0% built-up vs. ~41.8-42.3% for the rest of the city** —
+flat to slightly *lower*, not the elevated signal the "rivers attract informal settlement"
+narrative predicts.
+
+**Note on method:** excluding the park via `geometry.difference()` (vector operation) hung and
+had to be killed — switched to a raster mask (`ee.Image().paint()` + `.updateMask()`), which
+resolved instantly. Vector set operations on complex boundaries are expensive in Earth Engine;
+prefer rasterizing and masking when the same exclusion can be expressed that way.
+
+**Didn't stop at the flat aggregate — checked known hotspots instead of concluding "no
+encroachment."** Spot-checked three well-documented riverside informal settlements (Mathare,
+Kibera, Mukuru), comparing built-up fraction within 30m of the river against the surrounding 1km:
+
+| Location | Riverside (30m) | Surrounding 1km | Diff |
+|---|---|---|---|
+| Mathare | 89.6% | 80.0% | **+9.6pp** |
+| Kibera | 96.6% | 88.1% | **+8.5pp** |
+| Mukuru | 97.7% | 98.4% | -0.7pp |
+
+Mathare and Kibera both show a clear, substantial riverside effect. Mukuru shows none — but only
+because it's already 97-98% built-up everywhere in that area regardless of distance to the river,
+so there's no "outside" left to be less built-up than.
+
+**Decision / finding: riparian encroachment in Nairobi is real but spatially concentrated in
+specific informal settlements, not a uniform city-wide pattern.** The city-wide aggregate would
+have reported the *opposite* of the true local story if taken alone — a genuine lesson for a
+monitoring tool: a single dashboard-level number can hide the exact hotspots the tool exists to
+catch. Recommended next step (not built yet): a systematic gridded scan comparing riverside vs.
+surrounding built-up fraction across all of Nairobi, to find hotspots without relying on prior
+knowledge of where to look — the three checked here were chosen from documented literature, not
+discovered algorithmically.
+
+**Status:** written and executed, not yet committed to git.
+
+---
+
