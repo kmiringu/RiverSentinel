@@ -308,3 +308,42 @@ discovered algorithmically.
 
 ---
 
+## 2026-08-18 (cont.) — Notebook 06: Systematic riparian hotspot scan
+
+**Objective:** notebook 05's Mathare/Kibera/Mukuru hotspots were chosen from documented
+literature, not found by the pipeline itself. This notebook removes that dependency: scan the
+whole city on a 500m grid (`Geometry.coveringGrid`, UTM 37S, 3016 cells), compare each cell's
+riverside (within 30m of a river) built-up fraction against the rest of that same cell, and see
+what surfaces without prior knowledge of where to look. Cells with fewer than 20 pixels on either
+side (~2000 m²) are dropped as too noisy to trust.
+
+**Result:** 578 of 3016 cells had enough pixels to compare. Several showed a much sharper
+riverside/surrounding contrast (+30 to +56 percentage points) than either known hotspot showed
+in notebook 05 — genuine new candidates, reported as coordinates only, not asserted as named
+places (no ground-truthing or reverse-geocoding attempted).
+
+**The cross-check against notebook 05 surfaced a real methodological finding, not just
+validation.** Re-running Mathare/Kibera/Mukuru through this grid's cell-level numbers:
+
+| Location | This notebook (500m cell) | Notebook 05 (1km radius) |
+|---|---|---|
+| Mathare | +22.1pp | +9.6pp |
+| Kibera | **+0.7pp** | +8.5pp |
+| Mukuru | -2.7pp | -0.7pp |
+
+Mathare's contrast is *sharper* at fine grain — a genuine local edge. Kibera's is *erased* at
+fine grain — its immediate 500m neighborhood is already saturated built-up on both sides of the
+30m line, so a within-cell comparison has no local contrast to find, even though notebook 05's
+wider 1km-radius comparison clearly showed Kibera's riverside character against the broader city
+fabric.
+
+**Decision: report both methods as complementary, not pick one.** A within-cell scan finds sharp
+built/unbuilt boundaries with no prior knowledge required, but structurally misses settlements
+uniformly dense on both sides of the buffer — exactly the failure mode Kibera exposed. A
+wider-radius comparison catches those, but only for locations already checked by name. Neither
+is a strict upgrade on the other; a monitoring tool should run both.
+
+**Status:** written and executed, not yet committed to git.
+
+---
+
