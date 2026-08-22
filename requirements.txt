@@ -13,6 +13,7 @@ pandas
 
 # app
 streamlit
+streamlit-folium
 
 # notebooks
 jupyter

@@ -1,5 +1,8 @@
 # Data (large geospatial files - Don't commit, reproduced via pipeline, not stored.
-data/
+data/raw/
+
+# data/processed/ IS tracked — the Streamlit app reads its small CSV/JSON/PNG exports at
+# runtime and needs them available without an Earth Engine call on every page load.
 
 #Python
 __pycache__/
