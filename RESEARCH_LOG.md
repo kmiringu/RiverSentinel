@@ -347,3 +347,49 @@ is a strict upgrade on the other; a monitoring tool should run both.
 
 ---
 
+## 2026-08-22 — Notebook 07: Combined riparian hotspot report
+
+**Objective:** notebook 06 ended on its own recommended next step — a single monitoring output
+that runs both signals (05's wide-radius comparison, 06's within-cell grid scan) together instead
+of leaving a reader to reconcile two separate notebooks by hand.
+
+**Method:** run 06's cheap city-wide grid scan first (578 of 3016 cells pass the pixel-count
+filter, unchanged). From it, flag two kinds of candidates instead of one: `narrow` (top 25 by
+within-cell diff — sharp local edges, 06's original signal) and `saturated` (both riverside and
+rest-of-cell already ≥70% built-up, ranked by absolute riverside %, added specifically to catch
+06's own documented blind spot — cells with no local contrast left to find). Only this small
+merged set (49 unique cells, 1 flagged by both) gets the expensive 1km wide-radius verification
+pass from notebook 05 — restricting that pass to candidates rather than all 3016 cells is what
+keeps it affordable.
+
+**Result confirms the design worked.** Cross-checking Mathare/Kibera/Mukuru through the combined
+pipeline:
+
+| Location | Source flag | Narrow diff | Wide diff |
+|---|---|---|---|
+| Mathare | `narrow,saturated` | +22.1pp | +8.6pp |
+| Kibera | `saturated` | +0.7pp | **+8.5pp** |
+| Mukuru | `saturated` | +0.2pp | -2.9pp |
+
+Kibera is the proof: the narrow method alone gives +0.7pp (matching notebook 06's original
+finding, effectively invisible), but the saturation flag selects it for wide-radius verification
+without knowing in advance it was worth checking, and recovers +8.5pp — an exact match to
+notebook 05's hand-picked number. Mukuru correctly stays near zero on both signals despite being
+~100% built-up on both sides of the river, because the saturation flag compares the *diff*, not
+the absolute level, so uniform density alone doesn't trigger a false positive.
+
+**Found a real flaw in the merge step, not fixed, reported honestly.** Ranking all 49 candidates
+by `best_diff_pp = max(narrow diff, wide diff)` structurally buries the saturation signal: narrow
+diffs run up to +56pp while wide diffs cap around +20pp, so every top-15 slot by that single score
+is a `narrow` candidate — the saturation list (Kibera included) is real but numerically smaller
+and gets sorted to the bottom of a blended ranking. **Decision: report the two ranked lists
+side by side, not collapsed into one score** — the notebook's own top-15-by-`best_diff_pp` output
+is left in as a demonstration of why a single blended number isn't good enough, rather than
+silently switched to a "fixed" ranking. The CSV export (`combined_riparian_hotspots.csv`, 49 rows,
+all fields) carries both raw signals for anyone downstream who wants to rank them properly.
+
+**Status:** written, executed against live Earth Engine data (85.9% held-out accuracy, consistent
+with notebooks 03/05/06), outputs saved to `data/processed/`; not yet committed to git.
+
+---
+
