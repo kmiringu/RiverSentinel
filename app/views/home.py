@@ -7,39 +7,54 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from utils import load_summary
 
 st.title('🌊 RiverSentinel')
-st.caption('Nairobi built-up area change detection & riparian encroachment monitor — Moringa School Capstone')
+st.subheader('Find houses built too close to Nairobi\'s rivers — before you send a team to check.')
 
 summary = load_summary()
+kasarani = summary.get('buildings', {}).get('kasarani')
 
-col1, col2, col3 = st.columns(3)
-col1.metric('2024 classification accuracy', f"{summary['classification']['held_out_accuracy_pct']:.1f}%")
-col2.metric('City-wide built-up (excl. park)', f"{summary['city_wide']['builtup_pct_excl_park']:.1f}%")
-col3.metric('Flagged riverside hotspots', summary['combined_report']['candidate_count'])
+if kasarani:
+    col1, col2, col3 = st.columns(3)
+    col1.metric('Buildings flagged in Kasarani', f"{kasarani['encroaching_count']:,}")
+    col2.metric("Pamoja Trust's own field count", f"~{kasarani['pamoja_trust_reported_count']:,}")
+    col3.metric('Screening distance used', f"{kasarani['calibrated_distance_m']}m from a river")
 
 st.markdown('''
-### What this project does
-Classifies built-up land in Nairobi from Sentinel-2 imagery (Random Forest, validated against
-ESA WorldCover) and asks where that built-up land currently sits relative to the river network —
-riparian buffer encroachment, the second half of the project's stated goal.
+### What this does
 
-Use the sidebar to walk through each stage of the pipeline:
+Pamoja Trust has walked the riverbanks of Kasarani by hand to find houses built too close to the
+river. That kind of survey is slow and expensive to repeat, and it's hard to know where to look
+next once one area is done.
 
-- **Built-up Classification** — the 2024 Random Forest model behind every later page.
-- **Riparian Buffer Analysis** — city-wide riverside vs. rest-of-city comparison, plus known
-  informal-settlement hotspots checked by hand.
-- **Systematic Grid Scan** — a 500m-grid scan that finds hotspots with no prior knowledge of
-  where to look, and its own documented blind spot.
-- **Combined Hotspot Report** — the two methods merged into one ranked, interactive candidate map.
-- **Live Point Check** — click anywhere on a live map to run a real Earth Engine query at that
-  point, on demand.
+RiverSentinel does the same job with satellite images and building data instead of a walking
+survey: it finds every building in an area, measures how close each one is to a river, and hands
+back a list of the ones worth checking in person — coordinates included, ready to hand to a field
+team.
+
+**It found 725 buildings within 18 meters of a river in Kasarani. Pamoja Trust's own survey found
+about 700.** That's close enough to trust as a starting point, not close enough to skip the field
+visit — every flagged building still needs someone to go look.
+
+**→ Open "Encroaching Buildings" in the sidebar to see the list, the map, and download it.**
 ''')
 
-st.warning('''
-**What we tried and rejected:** an earlier 2019→2024 change-detection pass (comparing independent
-per-date classifications) produced only diffuse noise, not a real growth signal, even after
-fixing a real cloud-masking bug and adding band normalization. It is **not** reported as a
-finding anywhere in this app — see `RESEARCH_LOG.md`, "Notebook 04", for the full write-up of
-what was tried and why it was rejected.
-''')
+with st.expander("How sure can I be about this?"):
+    st.markdown('''
+    Getting close to the right *total* isn't the same as flagging the exact *same* buildings
+    Pamoja Trust found by hand — we don't have their building-by-building list to check against,
+    only the total they reported. It's possible some of our 725 aren't real encroachments, and
+    some real ones aren't on our list. Treat this as a strong first pass that narrows down where
+    to look, not a replacement for someone actually walking out and checking.
+    ''')
 
-st.caption('Full build narrative, every decision and dead end: see `RESEARCH_LOG.md` in the repo.')
+with st.expander("Where the data comes from"):
+    st.markdown('''
+    - **Building locations:** Google's Open Buildings project, which uses satellite imagery and
+      machine learning to map individual building footprints across Africa.
+    - **River locations:** a global river dataset (HydroSHEDS), matched against satellite imagery
+      of Nairobi.
+    - **The 18-meter screening distance:** not a legal boundary — we tested several distances and
+      picked the one that landed closest to Pamoja Trust's own reported count in Kasarani.
+
+    Full technical detail, every method tried and every dead end, lives under **Technical
+    Methodology** in the sidebar and in this project's `RESEARCH_LOG.md`.
+    ''')

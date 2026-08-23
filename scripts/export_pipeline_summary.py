@@ -123,6 +123,11 @@ summary = {
     },
 }
 
+buildings_path = PROCESSED_DIR / 'building_encroachment_summary.json'
+if buildings_path.exists():
+    with open(buildings_path) as f:
+        summary['buildings'] = json.load(f)
+
 out_path = PROCESSED_DIR / 'pipeline_summary.json'
 with open(out_path, 'w') as f:
     json.dump(summary, f, indent=2)

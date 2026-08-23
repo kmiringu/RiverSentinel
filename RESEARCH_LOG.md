@@ -393,3 +393,78 @@ with notebooks 03/05/06), outputs saved to `data/processed/`; not yet committed 
 
 ---
 
+## 2026-08-22 (cont.) — Pivot: building-level encroachment via Open Buildings
+
+**Why:** every notebook through 07 answers "what fraction of this area is built-up" — a pixel
+statistic that doesn't match the project's actual real-world reference point. **Pamoja Trust**
+has done manual, walk-the-riverbank surveys through **Kasarani** to find individual houses
+encroaching on rivers. The right question for that audience is "which specific buildings sit in
+the riparian buffer," not "what percent." Considered training a Mask R-CNN to detect individual
+buildings ourselves — ruled out: a house is often smaller than one Sentinel-2 pixel (10m), so
+nothing in this project's imagery could ever resolve individual buildings, and there's no free
+high-resolution imagery source for Kenya to train against.
+
+**Notebook 08 uses Google's Open Buildings dataset**
+(`GOOGLE/Research/open-buildings/v3/polygons`) instead — individual building footprint polygons
+across Africa, produced by a CNN Google already trained and published. This is transfer learning
+in the sense that matters here: reusing a trained model's predictions, not training one.
+
+**Real methodological pitfall hit and documented:** sampling the existing `dist_to_river` raster
+at each building via `reduceRegions(..., reducer=ee.Reducer.first())` does not name its output
+column after the image band despite an explicit `.rename()` call beforehand — the column comes
+out named after the reducer (`'first'`). Filtering on the old band name silently failed (Earth
+Engine does not exclude features where the filtered property doesn't exist — it lets them
+through), producing a first-pass number that looked plausible (82% of all buildings "within 30m
+of a river") but was actually every building in the confidence-filtered set, because the filter
+never ran. Caught by explicitly checking non-null counts before trusting any reduceRegions-derived
+filter — a real lesson, not a one-off typo, since the failure mode (wrong property name + a
+filter that doesn't exclude on missing properties) is easy to reproduce anywhere reduceRegions
+output feeds a downstream filter.
+
+**Kasarani case study (3km-radius stand-in for the constituency — no EE admin boundary asset
+exists at that granularity), confidence >= 0.7:** 56,678 buildings screened, 8,202 within 200m of
+a river. At the original, arbitrary 30m buffer (carried over unexamined from the pixel-level
+analysis): **1,227 buildings** — exported as a concrete candidate list
+(`data/processed/kasarani_encroaching_buildings.csv`: lon, lat, confidence, footprint area, exact
+distance to nearest river).
+
+**Calibrated against a real number, not left arbitrary.** Pamoja Trust's own manual survey of
+Kasarani reportedly found **~700 encroaching buildings** — 1,227 overpredicts that by about 75%.
+Rather than treat the mismatch as just a caveat, swept finer buffer widths to see which one
+actually reproduces their count:
+
+| Buffer | Buildings | Buffer | Buildings |
+|---|---|---|---|
+| 10m | 420 | 19m | 760 |
+| 15m | 598 | 20m | 841 |
+| 16m | 608 | 25m | 1,013 |
+| 17m | 636 | 30m | 1,227 |
+| **18m** | **725** | | |
+
+**18m is the closest match — 725 buildings, a 25-building gap instead of 527.** This is now the
+project's calibrated definition of "encroaching" everywhere in the app, replacing the earlier
+uncalibrated 30m. **Honest limit of this calibration, same lesson as notebook 02's NDVI-threshold
+sweep:** matching the aggregate count is not the same claim as matching the *same* 725 buildings —
+there's no per-building ground truth available, only Pamoja Trust's reported total, so a threshold
+that gets the right number could still be flagging a meaningfully different set with over- and
+under-counts canceling out. 18m is this project's current best estimate, not a validated
+per-building match, and not a legal riparian-reserve distance.
+
+**Why this count is trustworthy where notebook 06/07's grid-cell counts weren't:** each Open
+Buildings polygon is a real, discrete object with no 500m-grid double-counting artifact to correct
+for — the exact objection that kept notebooks 06/07 from reporting a headline count.
+
+**Beyond Kasarani, at the calibrated 18m distance:** running the same method on notebook 07's
+full 49-candidate set timed out — the same complex-vector-operation cost notebook 05 already
+documented (a scattered 49-region union this time, not a park-boundary difference). Scoped to the
+**top 15 candidates by `best_diff_pp`**: screened 1,877 buildings, found **86 within 18m of a
+river** (`data/processed/other_hotspots_encroaching_buildings.csv`, down from 132 at the old 30m
+threshold) — a partial city picture, explicitly not a full city-wide total (that would need
+`ee.batch.Export.table`'s asynchronous path instead of this project's interactive `getInfo()`
+pattern; left as documented future work).
+
+**Status:** notebook 08 written and executed against live Earth Engine data, calibrated against
+real field data; not yet committed to git.
+
+---
+

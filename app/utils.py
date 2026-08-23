@@ -29,3 +29,15 @@ def load_candidates():
 
 def image_path(name):
     return str(PROCESSED_DIR / name)
+
+
+BUILDING_NUMERIC_FIELDS = ['lon', 'lat', 'confidence', 'area_m2', 'distance_to_river_m']
+
+
+def load_buildings(filename):
+    with open(PROCESSED_DIR / filename) as f:
+        rows = list(csv.DictReader(f))
+    for row in rows:
+        for key in BUILDING_NUMERIC_FIELDS:
+            row[key] = float(row[key])
+    return rows

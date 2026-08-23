@@ -8,7 +8,7 @@
     "total_length_km": 393.42400000000015
   },
   "city_wide": {
-    "builtup_pct_excl_park": 43.82140131144073,
+    "builtup_pct_excl_park": 43.821401311440724,
     "buffer_sweep": [
       {
         "buffer_m": 30,
@@ -17,13 +17,13 @@
       },
       {
         "buffer_m": 50,
-        "in_buffer_pct": 40.89736863470627,
+        "in_buffer_pct": 40.89736863470626,
         "rest_of_city_pct": 41.909013228563566
       },
       {
         "buffer_m": 100,
-        "in_buffer_pct": 40.980427465377645,
-        "rest_of_city_pct": 42.33461366705497
+        "in_buffer_pct": 40.98042746537765,
+        "rest_of_city_pct": 42.33461366705496
       }
     ]
   },
@@ -419,5 +419,34 @@
         "best_diff_pp": 1.3076870541453616
       }
     ]
+  },
+  "buildings": {
+    "kasarani": {
+      "total_buildings": 56678,
+      "within_200m": 8202,
+      "buffer_sweep": {
+        "30": 1227,
+        "50": 2030,
+        "100": 3981
+      },
+      "calibration_sweep": {
+        "10": 420,
+        "15": 598,
+        "16": 608,
+        "17": 636,
+        "18": 725,
+        "19": 760,
+        "20": 841,
+        "25": 1013
+      },
+      "calibrated_distance_m": 18,
+      "pamoja_trust_reported_count": 700,
+      "encroaching_count": 725
+    },
+    "other_hotspots_top15": {
+      "buildings_screened": 1877,
+      "encroaching_count": 86
+    },
+    "confidence_threshold": 0.7
   }
 }
