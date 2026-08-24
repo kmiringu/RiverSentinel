@@ -7,5 +7,7 @@ RiverSentinel Business Case: From Pixel to Policy.
 
 Nairobi built-up area change detection & riparian encroachment monitor.
 
+2. The Solution: RiverSentinel
+RiverSentinel is an AI-powered spatial analysis analytics platform that pairs Random Forest pixel classifiers (identifying roofing materials via texture and colour) with YOLOv8-seg Deep Learning (tracing individual object boundaries). It turns a single blurry pixel mass back into an accurate, distinct count of 700+ homes.
 			MORINGA SCHOOL
                 CAPSTONE PROJECT - Made with Love.
