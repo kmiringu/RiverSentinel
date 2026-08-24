@@ -9,5 +9,23 @@ Nairobi built-up area change detection & riparian encroachment monitor.
 
 2. The Solution: RiverSentinel
 RiverSentinel is an AI-powered spatial analysis analytics platform that pairs Random Forest pixel classifiers (identifying roofing materials via texture and colour) with YOLOv8-seg Deep Learning (tracing individual object boundaries). It turns a single blurry pixel mass back into an accurate, distinct count of 700+ homes.
+
+	Business deliverables
+- This standardized Operational Intelligence Packet tool outputs 3 concrete business deliverables:
+1. Prioritised Triage Action Queue:
+ - High/Med/Low Risk (CSV) - Sorted buildings by its exact proximity to the river centerline
+ - Centroid Coordinates - Exact GPS coordinates for field confirmation
+
+2. Human & Logistical Exposure Dashboard
+ - Dynamic Population estimation - automatically multiply structure count by the informal settlement average density.
+ - Infrastructure Flags - identify unusually large geometric shapes within the zone and flag as critical assets.
+
+3. Spatiotemporal Drift Velocity Log
+ - Chronological Timeline - line graph showing physical settlements.
+ - Rapid-Growth Hotspots 
+
+
+
+
 			MORINGA SCHOOL
                 CAPSTONE PROJECT - Made with Love.
