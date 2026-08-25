@@ -1,0 +1,16 @@
+To understand the exact mathematical data requirements of deep learning.
+
+We break down the dataset sizing, target scale of individual structure footprints and our tool choice.
+
+1. Dataset Dimensions and Scale
+   How many images are in the training set?
+	- Our target training database should contain a minimum 200-500 distinct image tiles(sliced cleanly at a resolution of 640 by 640 pixels)
+
+   #Data Splitting.
+	- we must capture the 12-month climate cycle, we split the dataset roughly 50/50: 
+	a) 150 - 250 tiles from the dry season.
+	b) 150 - 250 tiles from the wet season.
+
+   - Example; a 350 tile training set using a standard 70/15/15 ml split. we have 245 tiles for training, 52 tiles for validation and 53 tiles for baseline testing.
+
+
