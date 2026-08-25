@@ -2,7 +2,7 @@
 RiverSentinel Business Case: From Pixel to Policy.
 
 1. The Market Problem(Data Gap)
-	- The inefficiency: Under Kenya's Environmental Management and Coordination Act(EMCA) and the Water Act 2016, NEMA and the WRA are legally mandated to clear and protect a 30-t0-60-meter riparian buffer zone. However, these agencies lack the field personnel to manually survey thousands of kilometers of riverbanks.
+	- The inefficiency: Under the Nairobi Rivers Commission Special Planning Area declaration, the applicable buffer is 30-t0-60-meter as a riparian buffer zone. However, these agencies lack the field personnel to manually survey thousands of kilometers of riverbanks.
 	- The Technical failure: Current government remote-sensing models rely on how resolution imagery that creates a "Blob Effect"(blending tightly packed homes together). This leads to a severe undercount (e.g. flagging only 118 structures a government blob-count vs when 700 as Pamoja Trust's manual ground count), leaving hundreds of vulnerable families completely invisible to disaster relief and town planners.
 
 2. The Solution: RiverSentinel is an AI-powered spatial analysis analytics platform that pairs Random Forest pixel classifiers (identifying roofing materials via texture and colour) with YOLOv8-seg Deep Learning (tracing individual object boundaries). It turns a single blurry pixel mass back into an accurate, distinct count of 700+ homes.
