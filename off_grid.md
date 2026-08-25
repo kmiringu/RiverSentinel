@@ -18,3 +18,10 @@ We break down the dataset sizing, target scale of individual structure footprint
 	- Informal settlements are densely packed, a single 640 by 640 pixel satellite tile can easily contain between 15 to 45 individual shacks
 	- The high density is an advantage in that by acquiring just 350 high-resolution images, we capture the thousands of individual structural footprints necessary for deep learning.
 
+3. Tooling annotation
+	- Since we are using the Microsoft Global Building Footprints to pre-populate the layout, we use annotation tools for rather than drawing 5,000 structures by hand.
+	a) data validation
+	b) manual cleaning
+	c) quality control
+
+
