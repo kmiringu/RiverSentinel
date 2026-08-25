@@ -13,4 +13,8 @@ We break down the dataset sizing, target scale of individual structure footprint
 
    - Example; a 350 tile training set using a standard 70/15/15 ml split. we have 245 tiles for training, 52 tiles for validation and 53 tiles for baseline testing.
 
+2. How many individual structures need a polygon drawn around them?
+	- for YOLOv8-seg to effectively learn the layout of an informal settlement without overfitting, it requires exposure to a min 3,000 to 5,000 individual building instances.
+	- Informal settlements are densely packed, a single 640 by 640 pixel satellite tile can easily contain between 15 to 45 individual shacks
+	- The high density is an advantage in that by acquiring just 350 high-resolution images, we capture the thousands of individual structural footprints necessary for deep learning.
 
