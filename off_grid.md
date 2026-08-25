@@ -44,3 +44,10 @@ We break down the dataset sizing, target scale of individual structure footprint
 Recommended: ROBOFLOW
 
 
+    NB:
+	- If and when we trim a large orthomosaic into 640 by 640 chips, builings sitting on a tile boundary get cut in half.
+	- Our model could miss or counts the same building twice.
+	
+    Solution:
+	- Overlapping tiles plus a non-max suppresion or deduplication pass on the stitched-together output.
+	- This merges a building spanning two tiles into one detection.
