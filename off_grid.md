@@ -25,3 +25,22 @@ We break down the dataset sizing, target scale of individual structure footprint
 	c) quality control
 
 
+	CHOICE OF TOOLS TRADEOFF
+    ROBOFLOW
+	- Free tool and understands the YOLOv8-seg data structure.
+	- It includes a 'smart polygon" AI Magic Wand which one can hover over a shack in a satellite tile, click once, and the underlying AI instantly traces the edges of the corrugated iron roof, generating a multi-point polygon.
+	- it exports unifiedly into data.yaml ready for training.
+
+    CVAT(Computer Vision Annotation Tool)
+	- Runs on Linux natively only. 
+	- It can be hosted locally via Docker completely offline, keeping massive, heavy GeoTIFF imagery processing fast and local.
+	- It has an excellent inter-annotator verification queue; i.e. if 3 members split the validation work, we can set a rule where member 3 must digitally "approve" the polygons drawn by the previous members to ensure absolute geometric consistency before running the model.
+
+    LABELME(Native Baseline)
+	- Open-source, local desktop application.
+	- Drawback: it outputs annotations as individual .json or .xml meaning the last member would have to manually write a script to transform these coordinate matrices into the normalized [class_id x1 y1 x2 y2] syntax that YOLO requires.
+	- Adds unnecessary friction.
+
+Recommended: ROBOFLOW
+
+
