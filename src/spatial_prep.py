@@ -28,3 +28,10 @@ def generate_riparian_buffer_zone():
     print("Success: 60-Meter legal riparian zone boundary successfully generated.")
 
     return final_buffer_zone_global
+
+# ensure code only runs if you we run this specific file directly.
+if __name__ == "__main__":
+    #test the function
+    buffer_result = generate_riparian_buffer_zone()
+    print("Final Calculated Boundary Box Limits (Min Lon, Min Lat, Max Lon, Max Lat):")
+    print(buffer_result.geometry.bounds)
