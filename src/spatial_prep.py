@@ -22,4 +22,9 @@ def generate_riparian_buffer_zone():
     # 4. Draw the legal zone boundary; now that our map is in meters
     legal_60m_buffer_polygon = river_metric_dataframe.buffer(60)
 
+    # 5. Convert back to standard GPS Degrees
+    # we convert back to EPSG:4326 so this vector aligns with standard satellite image grids
+    final_buffer_zone_global = legal_60m_buffer_polygon.to_crs(epsg=4326)
+    print("Success: 60-Meter legal riparian zone boundary successfully generated.")
 
+    return final_buffer_zone_global
