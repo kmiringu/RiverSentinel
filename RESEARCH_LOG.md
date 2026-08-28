@@ -1,7 +1,7 @@
 # RiverSentinel — Research Log
 
 Running record of the build: what was tried, what happened, and the reasoning behind each
-decision — written as we go. This is not the README.
+decision. This is not the README.
 
 ---
 
@@ -9,8 +9,7 @@ decision — written as we go. This is not the README.
 
 Initialized the repo (`git init`, default branch renamed `master` → `main`). Adopted a hybrid
 structure: `notebooks/` for exploration, `src/` for code that's graduated from "I think this
-works" to "proven, reused" — mirroring how `jali_generator.py` worked for the earlier shelved
-capstone idea. `data/` (raw + processed) is fully gitignored: geospatial files are large and
+works" to "proven, reused". `data/` (raw + processed) is fully gitignored: geospatial files are large and
 reproducible from the pipeline, not something to store in git history.
 
 Python venv + `requirements.txt` (earthengine-api, geemap, geopandas, rasterio, shapely, folium,
