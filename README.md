@@ -9,6 +9,7 @@ RiverSentinel Business Case: From Pixel to Policy.
 
 	Business deliverables
 - This standardized Operational Intelligence Packet tool outputs 3 concrete business deliverables:
+
 1. Prioritised Triage Action Queue:
 	 - High/Med/Low Risk (CSV) - Sorted buildings by its exact proximity to the river centerline
 	 - Centroid Coordinates - Exact GPS coordinates for field confirmation
