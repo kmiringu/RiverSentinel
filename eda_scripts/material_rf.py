@@ -37,4 +37,12 @@ def train_riparian_material_classifier(training_csv_path, model_export_path):
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    # 5. Model Initalization
+    # Build a forest of 100 Decision Trees.
+    # Each tree will look at the features and vote on whether a pixel is a roof, water, or soil.
+
+    print(" Training the Random Forest ensemble over the pixel matrix...")
+    rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    rf_classifier.fit(X_train, y_train)
+    print("Model training complete.")
     
