@@ -55,4 +55,26 @@ def train_riparian_material_classifier(training_csv_path, model_export_path):
         target_names=['1: Metal Roof', '2: River Water', '3: Veg/Soil']
     ))
 
-    
+    # 7. Export the Model
+    # Save the trained model to use it later.
+
+    os.makedirs(os.path.dirname(model_export_path), exist_ok=True)
+    import joblib
+    joblib.dump(rf_classifier, model_export_path)
+    print(f" Trained model baseline successfully saved at: {model_export_path}\n")
+
+
+    return rf_classifier
+
+if __name__ == "__main__":
+    #Define file paths matching our layout repo.
+    RAW_TRAINING_DATA = "data/processed/pixel_training_samples.csv"
+    EXPORTED_MODEL_BIN = "models/random_forest_baseline.pkl"
+
+    try:
+        train_riparian_material_classifier(
+            training_csv_path= RAW_TRAINING_DATA,
+            model_export_path=EXPORTED_MODEL_BIN
+        )
+    except Exception as e:
+        print(f" \n Pipeline stopped with an error:\n {str(e)}")
