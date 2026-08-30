@@ -19,4 +19,16 @@ def train_riparian_material_classifier(training_csv_path, model_export_path):
     pixel_data = pd.read_csv(training_csv_path)
     print(f" Loaaded {len(pixel_data)} verified training pixel samples.")
 
+    # 3. Feature Selection
+    # Features (X): Colour values (RGB) and Texture values (GLCM Contrast and Homogeneity)
+    # Texture scores are crucial as they tell the model if a pixel is rough or smooth!
+    feature_columns = ['R', 'G', 'B', 'texture_contrast', 'texture_homogeneity']
+    X = pixel_data(feature_columns)
+
+    # Target (y): Ground Truth class label
+    # 1 = Corrugated Iron Roof
+    # 2 = River Water
+    # 3 = Vegetation / Bare Soil
+    y = pixel_data['class_label']
+
     
