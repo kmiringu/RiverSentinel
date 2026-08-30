@@ -45,4 +45,14 @@ def train_riparian_material_classifier(training_csv_path, model_export_path):
     rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
     rf_classifier.fit(X_train, y_train)
     print("Model training complete.")
+
+    # 6. Evaluation 
+    predictions = rf_classifier.predict(X_test)
+    print("\n ---RANDOM FOREST BASELINE PERFORMANCE REPORT ---")
+    print(classification_report(
+        y_test,
+        predictions,
+        target_names=['1: Metal Roof', '2: River Water', '3: Veg/Soil']
+    ))
+
     
