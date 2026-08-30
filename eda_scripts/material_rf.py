@@ -31,4 +31,10 @@ def train_riparian_material_classifier(training_csv_path, model_export_path):
     # 3 = Vegetation / Bare Soil
     y = pixel_data['class_label']
 
+    # 4. Data Splitting
+    # Split into 80% for training trees and 20% to test accuracy
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
     
