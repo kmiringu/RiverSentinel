@@ -11,3 +11,9 @@ Part 2: Modelling
 Part 3: UI
 	- Takes final table and puts it on a map.
 	
+
+RULE:
+
+** Every section's OUTPUT file name must match the next section's INPUT**
+
+
