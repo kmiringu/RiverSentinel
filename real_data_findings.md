@@ -10,6 +10,11 @@ Dataset;
 outputs;
 .geojson file, tif and tiled png images.
 
+
+Regions:
+KASARANI, GATHARAINI, MOTOINE
+
+
 Part 2: Modelling
 	- Turns the image into pixel training data
 	- Random Forest classifier baseline and a YOLOv8-seg structure counter.
