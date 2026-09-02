@@ -4,6 +4,12 @@ Part 1: Preprocessing
 	- Turn raw downloads into a clean vector buffer.
 	- A clipped satellite image.
 
+Dataset;
+- OSM waterways shapefile, Sentinel-2 composite
+
+outputs;
+.geojson file, tif and tiled png images.
+
 Part 2: Modelling
 	- Turns the image into pixel training data
 	- Random Forest classifier baseline and a YOLOv8-seg structure counter.
